@@ -1,0 +1,31 @@
+service: intelligate
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-south-1
+  stage: dev
+  timeout: 15
+  memorySize: 512
+  environment:
+    NODE_ENV: production
+    MONGO_URI: mongodb+srv://ankityadav18193_db_user:RjCWGGRI5VmGOD9F@cluster0.gonmgzc.mongodb.net/?appName=Cluster0
+
+functions:
+  api:
+    handler: handler.main
+    events:
+      # ✅ ROOT ROUTE (CRITICAL FIX)
+      - httpApi:
+          path: /
+          method: ANY
+
+      # ✅ PROXY ROUTE
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+
+  optimizeJob:
+    handler: src/jobs/handler.optimizeJob
+    events:
+      - schedule: rate(5 minutes)

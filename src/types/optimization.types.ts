@@ -19,6 +19,7 @@ export type Decision = {
     ttl?: number;
     increment?: number;
   };
+  reason?: string;  
 };
 
 export type AuditLog = {

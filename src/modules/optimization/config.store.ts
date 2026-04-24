@@ -17,7 +17,7 @@ const getKey = (endpoint: string): string => {
   return `${PREFIX}:${endpoint}`;
 };
 
-// 🔥 GET CONFIG
+ 
 export const getConfig = async (
   endpoint: string
 ): Promise<OptimizationConfig> => {

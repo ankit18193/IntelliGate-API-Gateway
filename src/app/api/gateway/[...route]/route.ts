@@ -31,7 +31,10 @@ import {
   shouldBlockEndpoint,
 } from "@/utils/failureTracker";
 
-const publicRoutes = ["/api/gateway/public"];
+const publicRoutes = [
+  "/api/gateway/public",
+  "/api/docs"
+];
 
 /**
  * @swagger

@@ -7,7 +7,7 @@ import { isCacheEnabled } from "@/config/optimization.config";
 export const cacheMiddleware = async (gatewayReq: GatewayRequest) => {
   const { request, context } = gatewayReq;
 
-  // 🔹 Only cache GET requests
+   
   if (request.method !== "GET") return null;
 
   try {
@@ -17,7 +17,7 @@ export const cacheMiddleware = async (gatewayReq: GatewayRequest) => {
     const shouldCache = await isCacheEnabled(endpoint);
     if (!shouldCache) return null;
 
-    // 🔹 Ensure Redis is ready
+     
     if (!redis || redis.status !== "ready") {
       return null;
     }

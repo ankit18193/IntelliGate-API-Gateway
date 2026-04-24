@@ -10,7 +10,7 @@ export interface Suggestion {
   suggestion: string;
   priority: Priority;
 
-  // 🔥 NEW FIELDS (for Phase 5+)
+   
   category: "performance" | "reliability" | "scaling" | "caching";
   score?: number;
   source: "rule" | "ai";

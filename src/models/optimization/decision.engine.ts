@@ -1,5 +1,6 @@
 import { OptimizationInput, Decision } from "@/types/optimization.types";
 import { EndpointAnalysis } from "@/types/optimization.types";
+import { analyzeTrends } from "@/modules/optimization/trend.analyzer";
 
 export const decideAction = (
   input: OptimizationInput
@@ -93,5 +94,52 @@ export const decideFromAnalysis = (
   }
 
  
+  return null;
+};
+
+export const smartDecision = async (
+  analysis: EndpointAnalysis
+): Promise<Decision | null> => {
+  const confidence =
+    (analysis.signals.slow ? 1 : 0) +
+    (analysis.signals.highTraffic ? 1 : 0) +
+    (analysis.signals.errorProne ? 1 : 0);
+
+  if (confidence < 1) {
+    return null;  
+  }
+
+  
+   const trend = await analyzeTrends(analysis.endpoint);
+
+   
+  if (!trend) return null;
+
+  if (trend.errorTrend) {
+    return {
+      action: "FLAG_ENDPOINT",
+      target: analysis.endpoint,
+      reason: "Error rate trend is critical based on historical data.",  
+    };
+  }
+
+  if (trend.slowTrend) {
+    return {
+      action: "ENABLE_CACHE",
+      target: analysis.endpoint,
+      metadata: { ttl: 60 },
+      reason: "Endpoint is consistently slow based on historical trend.",  
+    };
+  }
+
+  if (trend.trafficTrend) {
+    return {
+      action: "INCREASE_RATE_LIMIT",
+      target: analysis.endpoint,
+      metadata: { increment: 20 },
+      reason: "High traffic detected repeatedly over multiple cycles.",   
+    };
+  }
+
   return null;
 };

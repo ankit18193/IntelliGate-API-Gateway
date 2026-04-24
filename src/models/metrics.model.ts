@@ -19,6 +19,6 @@ const MetricsSchema = new mongoose.Schema({
   userId: { type: String, default: null },
 });
 
-// 🔥 Important for Next.js (avoid overwrite)
+ 
 export const MetricsModel =
   mongoose.models.Metrics || mongoose.model("Metrics", MetricsSchema);

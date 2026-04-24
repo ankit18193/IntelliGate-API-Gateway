@@ -42,7 +42,7 @@ export const analyzeWithFallback = async (
       if (result && result.length > 0) {
         console.log(`Success from ${provider.name}`);
 
-        // 🔥 Normalize before returning
+         
         return normalizeAISuggestions(result, data.endpoint);
       }
     } catch (error) {

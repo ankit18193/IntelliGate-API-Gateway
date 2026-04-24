@@ -121,9 +121,7 @@ export const deleteConfig = async (endpoint: string): Promise<void> => {
   await redis.del(getKey(endpoint));
 };
 
-// =====================================================
-// 🔍 HELPERS
-// =====================================================
+
 
  
 export const isCacheEnabled = async (endpoint: string): Promise<boolean> => {

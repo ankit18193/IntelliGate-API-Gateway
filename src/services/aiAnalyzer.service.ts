@@ -53,7 +53,7 @@ export const analyzeWithAI = async (
     });
   }
 
-  // Case 4: Clean system
+   
   if (
     data.avgLatency < 100 &&
     data.errorRate < 1 &&

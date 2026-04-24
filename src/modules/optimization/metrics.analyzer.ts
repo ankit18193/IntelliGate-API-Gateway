@@ -47,11 +47,16 @@ export const analyzeAndOptimize = (metrics: Metrics): void => {
 };
 
 export const analyzeMetricsBatch = (
-  metricsList: Metrics[],
+  metricsList: Metrics[]
 ): EndpointAnalysis[] => {
+  if (!metricsList.length) return [];
+
+   
+  const globalAvgLatency = metricsList.reduce((sum, m) => sum + m.latency, 0) / metricsList.length;
+  const globalErrorRate = (metricsList.filter((m) => m.status >= 500).length / metricsList.length) * 100;
+  
   const grouped: Record<string, Metrics[]> = {};
 
-  
   for (const m of metricsList) {
     if (!grouped[m.endpoint]) {
       grouped[m.endpoint] = [];
@@ -59,33 +64,27 @@ export const analyzeMetricsBatch = (
     grouped[m.endpoint].push(m);
   }
 
-  
+  const totalEndpoints = Object.keys(grouped).length;
+  const avgRequestsPerEndpoint = metricsList.length / totalEndpoints;
+
   return Object.entries(grouped).map(([endpoint, list]) => {
     const totalRequests = list.length;
-
-    const avgLatency =
-      list.reduce((sum, m) => sum + m.latency, 0) / totalRequests;
-
+    const avgLatency = list.reduce((sum, m) => sum + m.latency, 0) / totalRequests;
     const errors = list.filter((m) => m.status >= 500).length;
-
     const errorRate = (errors / totalRequests) * 100;
 
     const healthScore = Math.max(0, 100 - avgLatency * 0.2 - errorRate * 2);
 
-    const isSlow = avgLatency > 300;
-    const isErrorProne = errorRate > 5;
-    const isHighTraffic = totalRequests > 50;
+     
+    const isSlow = avgLatency > Math.max(300, globalAvgLatency * 1.2);
+     
+    const isErrorProne = errorRate > Math.max(5, globalErrorRate * 1.5);
+     
+    const isHighTraffic = totalRequests > Math.max(50, avgRequestsPerEndpoint * 1.5);
 
-    
-    const signals = {
-      slow: isSlow,
-      errorProne: isErrorProne,
-      highTraffic: isHighTraffic,
-    };
+    const signals = { slow: isSlow, errorProne: isErrorProne, highTraffic: isHighTraffic };
 
-    
     let severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" = "LOW";
-
     if (isErrorProne && isHighTraffic) {
       severity = "CRITICAL";
     } else if (isSlow && isHighTraffic) {
@@ -100,12 +99,9 @@ export const analyzeMetricsBatch = (
       avgLatency: Math.round(avgLatency),
       errorRate: Math.round(errorRate),
       healthScore: Math.round(healthScore),
-
       isSlow,
       isErrorProne,
       isHighTraffic,
-
-      
       severity,
       signals,
     };
