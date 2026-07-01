@@ -14,8 +14,11 @@
 /coverage
 
 # next.js
-/.next/
-/out/
+.next/
+**/tmp/
+**/out/
+*.tgz
+examples/basic/index.js
 
 # production
 /build
